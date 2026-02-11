@@ -1,5 +1,6 @@
 from transformers import pipeline, AutoTokenizer,AutoModelForSequenceClassification
-
+import torch
+import torch.nn.functional as F
 classifier=pipeline("sentiment-analysis")
 output=classifier("i am feeling fulfilled from botom of my heart")
 print(output)
@@ -12,12 +13,20 @@ opt=classy("i am feeling fulfilled from botom of my heart")
 
 print(opt)
 
-seq="Using a Transformer Network is simple"
-res=tokenizer(seq)
-print(res)
-tokens=tokenizer.tokenize(seq)
-print(tokens)
-ids=tokenizer.convert_tokens_to_ids(tokens)
-print(ids)
-decode_string=tokenizer.decode(ids)
-print(decode_string)
+text=["I love animals and i hve been taking care of them since my childhood","You are beautiful"]
+
+out=classy(text)
+print(out)
+batch=tokenizer(text, padding=True,truncation=True,max_length=512,return_tensors="pt")
+print(batch)
+
+with torch.no_grad():
+    outpt=model(**batch)
+    print(outpt)
+    predictions=F.softmax(outpt.logits,dim=1)
+    print(predictions)
+    labels=torch.argmax(predictions,dim=1)
+    print(labels)
+
+
+
